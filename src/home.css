@@ -1,0 +1,16 @@
+.coutryBanner {
+    margin: auto;
+    margin-bottom: 2em;
+    font-weight: bold;
+    font-size: larger;
+    background-color: rgb(64, 64, 64);
+    text-align: center;
+}
+
+.currentCountry {
+    color: white;
+}
+
+.worldWide {
+    color: #6666ff;
+}
