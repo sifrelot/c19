@@ -17,7 +17,6 @@ class App extends Component {
   // fix this
   handleLog = () => {
     const {connected} = this.state
-    console.log("bonjour")
     if (connected===true)
       this.setState({connected: false})
     else
@@ -30,29 +29,14 @@ class App extends Component {
       <div>
         <NavBar connected={connected} onClickLog={this.handleLog}/>
         <header className="App-header">
-          <h1 className="mainTitle">Welcome to COVID19 cloud project</h1>
         </header>
         <div>
           <BrowserRouter>
-            <nav>
-              <ul>
-                <li>
-                  <Link to="/">Home</Link>
-                </li>
-                <li>
-                  <Link to="/country">Country</Link>
-                </li>
-                <li>
-                  <Link to="/articles">Articles</Link>
-                </li>
-              </ul>
-            </nav>
-
             <Switch>
               <Route exact path="/">
                 <Home/>
               </Route>
-              <Route path="/country">
+              <Route path="/articles">
                 <Country/>
               </Route>
               <Route path="*">

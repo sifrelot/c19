@@ -7,7 +7,49 @@ import CaseTotal from './caseTotal'
 import CaseCountry from './caseCountry'
 import './home.css'
 import ReturnBanner from './returnBanner'
-//import {firebase} from './firebase'
+import {HISTORICAL, SUMMARY} from './firebase'
+
+function getPreviousDay() {
+  const date = new Date()
+  date.setDate(date.getDate() - 1)
+  return `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()-2000}`
+}
+
+function sortHistoricalData(data) {
+  let ret_data = {}
+  let prov_data
+  let order_list =[]
+  for (let date in data["cases"]) {
+    order_list = [...order_list, date]
+  }
+  order_list.sort(compareHistoricalTime)
+  for (let situation in data) {
+    prov_data = {}
+    for (let date in order_list) {
+      prov_data[order_list[date]] = data[situation][order_list[date]]
+    }
+    ret_data[situation] = prov_data
+  }
+  return ret_data
+}
+
+function compareHistoricalTime(a,b) {
+  let tab_a = a.split("/")
+  let tab_b = b.split("/")
+  if (parseInt(tab_a[2],10)<parseInt(tab_b[2],10)) 
+    return -1
+  else if (parseInt(tab_a[2],10)===parseInt(tab_b[2],10)) {
+    if (parseInt(tab_a[0],10)<parseInt(tab_b[0],10))
+      return -1
+    else if (parseInt(tab_a[0],10)===parseInt(tab_b[0],10)){
+      if (parseInt(tab_a[1],10)<parseInt(tab_b[1],10))
+        return -1
+      else if (parseInt(tab_a[1],10)===parseInt(tab_b[1],10))
+        return 0
+    }
+  }
+  return 1
+}
 
 class Home extends Component {
   state = {
@@ -31,19 +73,28 @@ class Home extends Component {
         recovered:[],
       }}
   }
-  
-
-  /*async getData() {
-    const db = firebase.firestore()
-    const dataFirebase = await db.collection("summary").get()
-    console.log(dataFirebase)
-    const date = new Date(dataFirebase["Countries"][0]["Date"])
-  }*/
 
   async getCovidSummary() {
-    var summary = await fetch("https://api.covid19api.com/summary")
-    if (summary.ok){
-      const data = await summary.json()
+    let firestore_date = await SUMMARY.doc("Date").get() // get data from firebase
+    if (firestore_date.exists) {
+      firestore_date = new Date(firestore_date.data()["Date"])
+
+      if (true) { // condition sur la date
+        let firestore_data = await SUMMARY.doc("summary").get()  // get data from firebase
+        if (firestore_data.exists) { // if data exist: use this data. Otherwise ask the covid19 api
+          console.log("summary from firestore")
+          firestore_data = firestore_data.data()
+          if (firestore_data!==undefined) {
+            this.setState({summary: firestore_data})
+            return
+          }
+        }
+      }
+    }
+    // get data from the covid api
+    var summary_api = await fetch("https://api.covid19api.com/summary")
+    if (summary_api.ok){
+      const data = await summary_api.json()
       const global = data["Global"]
       if (global !== undefined) {
         const summary = {
@@ -72,34 +123,44 @@ class Home extends Component {
               ActiveConfirmed:countries[country]["TotalConfirmed"] - countries[country]["TotalDeaths"] - countries[country]["TotalRecovered"],
               RecoveryRate:countries[country]["TotalConfirmed"] / countries[country]["TotalRecovered"],
               MortalityRate:countries[country]["TotalConfirmed"] / countries[country]["TotalDeaths"],
-              //CountryCode:countries[country][] TODO remplir
+              CountryCode:countries[country]["CountryCode"],
             }
           }
         }
-        /*const db = firebase.database()
-        let element
-        for (element in countries)
-          db.ref("summary/" + countries["ID"]).set(element)*/
-        
+        await SUMMARY.doc("summary").set(summary) // add recovered data to the firestore database
+        await SUMMARY.doc("Date").set({Date: countries[0]["Date"]}) // set the date of the last data
         this.setState({summary: summary})
       }
     }
   }
 
-  async getCovidHistorical() {
-    console.log("entering the historical get method")
-    const {country, summary, historical} = this.state
+  async getCovidHistorical(opt_country) {
+    const {summary, historical} = this.state
+    let {country} = this.state
+    if (opt_country!==undefined)
+      country = opt_country
+    let historical_data = {...historical}
+
+    let firestore_data = await HISTORICAL.doc(country).get() // get data from firebase
+
+    if (firestore_data.exists) { // if data exist and is up to date: use this data. Otherwise ask the corona api
+      console.log("historical from firestore")
+      firestore_data = firestore_data.data()
+      if (firestore_data["cases"][getPreviousDay()]!==undefined) {
+        historical_data[country] = sortHistoricalData(firestore_data)
+        this.setState({historical: historical_data})
+        return
+      }
+    }
     let url = "https://corona.lmao.ninja/v2/historical/"
     if (country==="Worldwide")
       url = url + "all"
     else
       url = `${url}${summary[country]["CountryCode"]}`
-    console.log(url)
     const historical_raw = await fetch(url)
 
     if (historical_raw.ok){
       const data = await historical_raw.json()
-      let historical_data = {...historical}
       if (country==="Worldwide") {
         if (data !== undefined) {
           historical_data["Worldwide"] = {
@@ -116,12 +177,13 @@ class Home extends Component {
               recovered:timeline["recovered"]}
         }
       }
+      await HISTORICAL.doc(country).set(historical_data[country]) // add recovered data to the firestore database
       this.setState({historical: historical_data})
     }
   }
 
   componentDidMount(){
-    //this.getCovidSummary()
+    this.getCovidSummary()
     this.getCovidHistorical()
   }
 
@@ -130,19 +192,24 @@ class Home extends Component {
   }
 
   handleCountryChange = (country) => {
+    const {historical} = this.state
     this.setState({country: country})
+    if (historical[country]===undefined)
+      this.getCovidHistorical(country)
   }
   
   render() {
     const {country, summary, historical} = this.state
     let date
     let historical_data = []
-    for (date in historical[country]["cases"])
-      historical_data = [...historical_data,
-        {name: date,
-        cases: historical[country]["cases"][date],
-        deaths: historical[country]["deaths"][date],
-        recovered: historical[country]["recovered"][date],}]
+    if (historical[country]!==undefined) {
+      for (date in historical[country]["cases"])
+        historical_data = [...historical_data,
+          {name: date,
+          cases: historical[country]["cases"][date],
+          deaths: historical[country]["deaths"][date],
+          recovered: historical[country]["recovered"][date],}]
+    }
     const daily_data = historical_data.slice(-8)
     
     return (

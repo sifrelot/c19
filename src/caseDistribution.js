@@ -13,12 +13,14 @@ export default class CaseDistribution extends PureComponent {
     }
 
     componentWillReceiveProps(nextProps) {
-        const data = [
-            {name: "Active Cases", value: nextProps.data["ActiveConfirmed"]},
-            {name: "Recovered Cases", value: nextProps.data["TotalRecovered"]},
-            {name: "Dead Cases", value: nextProps.data["TotalDeaths"]},
-        ]
-        this.setState({country: nextProps.country, data: data})
+        if (nextProps.data!==undefined) {
+            const data = [
+                {name: "Active Cases", value: nextProps.data["ActiveConfirmed"]},
+                {name: "Recovered Cases", value: nextProps.data["TotalRecovered"]},
+                {name: "Dead Cases", value: nextProps.data["TotalDeaths"]},
+            ]
+            this.setState({country: nextProps.country, data: data})
+        }
     }
 
     render() {

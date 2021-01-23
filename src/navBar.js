@@ -8,13 +8,26 @@ const NavBar = ({connected, onClickLog}) => {
     else
         logButton = "Log In"
     return (
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
-                <img src="icon.svg" width="40" height="40"/>
-                <a class="navbar-brand me-auto" href="/">COVID-19</a>
-                <button class="btn btn-outline-success" type="submit" onClick={onClickLog}>{logButton}</button>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                    <a class="navbar-brand">COVID-19</a>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/articles">Articles</a>
+                        </li>
+                    </ul>
+                    
+                    <button class="btn btn-outline-success" type="submit" onClick={onClickLog}>{logButton}</button>
+                </div>
             </div>
-        </nav>
+        </nav>        
     )
 }
 
