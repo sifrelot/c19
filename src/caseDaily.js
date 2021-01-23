@@ -1,67 +1,63 @@
 import React, { PureComponent } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, } from 'recharts';
 
-const data = [
-  {
-    name: '11 Jan', dd: 13, dr: 600, dnc: 626,
-  },
-  {
-    name: '12 Jan', dd: 26, dr: 381, dnc: 452,
-  },
-  {
-    name: '13 Jan', dd: 45, dr: 1236, dnc: 341,
-  },
-  {
-    name: '14 Jan', dd: 12, dr: 1262, dnc: 671,
-  },
-  {
-    name: '15 Jan', dd: 21, dr: 960, dnc: 362,
-  },
-  {
-    name: '16 Jan', dd: 36, dr: 1306, dnc: 456,
-  },
-  {
-    name: '17 Jan', dd: 29, dr: 862, dnc: 1200,
-  },
-]
-
+function formatData(data) {
+  if (data===undefined || data[7]===undefined)
+    return []
+  let cases, deaths, recovered
+  let ret_data = []
+  for (let i=0; i<7; i++) {
+    cases = data[i+1]["cases"] - data[i]["cases"]
+    deaths = data[i+1]["deaths"] - data[i]["deaths"]
+    recovered = data[i+1]["recovered"] - data[i]["recovered"]
+    ret_data = [...ret_data, {name: data[i+1], cases: cases, deaths: deaths, recovered: recovered}]
+  }
+  return ret_data
+}
 
 export default class CaseDaily extends PureComponent {
-    state = {
-      country: this.props.country
-    }
+  state = {
+    country: this.props.country,
+    data: formatData(this.props.data),
+  }
 
-    componentWillReceiveProps(nextProps) {
-      this.setState({country: nextProps.country})
-    }
+  componentWillReceiveProps(nextProps) {
+    this.setState({country: nextProps.country, data: formatData(nextProps.data)})
+  }
 
-    render() {
-        const {country} = this.state
-        const countryPrint = country==="Worldwide" ? country : "in " + country
-        return (
-            <div>
-                <div className="alert alert-primary" role="alert">
-                    {`Daily Corona Virus Cases ${countryPrint}`}
-                </div>
-                <div class="d-flex justify-content-center">
-                  <BarChart
-                      width={700}
-                      height={500}
-                      data={data}
-                      margin={{top: 10, right: 0, left: 0, bottom: 15,}}
-                  >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="dd" fill="#F98E97" />
-                      <Bar dataKey="dr" fill="#82B4FF" />
-                      <Bar dataKey="dnc" fill="#FFE180" />
-                  </BarChart>
-                </div>
-                <p/>
-            </div>
-        )
-    }
+  render() {
+    const {country, data} = this.state
+    const countryPrint = country==="Worldwide" ? country : "in " + country
+    return (
+      <div>
+        <div className="alert alert-primary" role="alert">
+          {`Daily Corona Virus Cases ${countryPrint}`}
+        </div>
+        {(data===undefined || data[0]===undefined) ?
+          <div class="d-flex align-items-center">
+            <strong>Loading...</strong>
+            <div class="spinner-border ms-auto" role="status" aria-hidden="true"/>
+          </div> :
+          <div class="d-flex justify-content-center">
+            <BarChart
+              width={800}
+              height={500}
+              data={data}
+              margin={{top: 10, right: 0, left: 30, bottom: 15,}}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="deaths" fill="#F98E97" />
+              <Bar dataKey="recovered" fill="#82B4FF" />
+              <Bar dataKey="cases" fill="#FFE180" />
+            </BarChart>
+          </div>
+        }
+        <br/>
+      </div>
+    )
+  }
 }

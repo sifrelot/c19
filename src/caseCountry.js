@@ -48,7 +48,6 @@ class CaseCountry extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps)
     const data = nextProps.data
     if (data!==undefined && data["Worldwide"]["TotalConfirmed"]!=="") {
       let l = []
