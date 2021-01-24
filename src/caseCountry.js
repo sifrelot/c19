@@ -1,4 +1,5 @@
 import React, {PureComponent} from 'react'
+import './caseCountry.css'
 
 class CaseCountry extends PureComponent {
   static staticData = []
@@ -66,6 +67,10 @@ class CaseCountry extends PureComponent {
     }
   }
 
+  componentWillUnmount(){
+    window.scrollTo(0,0)
+  }
+
   render() {
     const {sortData, data, country} = this.state
     return (
@@ -78,19 +83,19 @@ class CaseCountry extends PureComponent {
           <table class="table table-bordered border-white">
             <thead>
               <tr>
-                <td class="table-light border-white" onClick={() => this.handleClickHead("name")}>Country</td>
-                <td class="table-warning border-white" onClick={() => this.handleClickHead("NewConfirmed")}>New Cases</td>
-                <td class="table-warning border-white" onClick={() => this.handleClickHead("TotalConfirmed")}>Total Cases</td>
-                <td class="table-primary border-white" onClick={() => this.handleClickHead("NewRecovered")}>New Recoveries</td>
-                <td class="table-primary border-white" onClick={() => this.handleClickHead("TotalRecovered")}>Total Recoveries</td>
-                <td class="table-danger border-white" onClick={() => this.handleClickHead("NewDeaths")}>New Deaths</td>
-                <td class="table-danger border-white" onClick={() => this.handleClickHead("TotalDeaths")}>Total Deaths</td>
+                <td class="table-light border-white hand" onClick={() => this.handleClickHead("name")}>Country</td>
+                <td class="table-warning border-white hand" onClick={() => this.handleClickHead("NewConfirmed")}>New Cases</td>
+                <td class="table-warning border-white hand" onClick={() => this.handleClickHead("TotalConfirmed")}>Total Cases</td>
+                <td class="table-primary border-white hand" onClick={() => this.handleClickHead("NewRecovered")}>New Recoveries</td>
+                <td class="table-primary border-white hand" onClick={() => this.handleClickHead("TotalRecovered")}>Total Recoveries</td>
+                <td class="table-danger border-white hand" onClick={() => this.handleClickHead("NewDeaths")}>New Deaths</td>
+                <td class="table-danger border-white hand" onClick={() => this.handleClickHead("TotalDeaths")}>Total Deaths</td>
               </tr>
             </thead>
             <tbody>
               {data.sort(this.getSortOrder(sortData)).map((element, index)=>(
                 <tr key={index}>
-                  <td className="table-light border-white" onClick={() => this.handleClickCountry(element["name"])}>{element["name"]}</td>
+                  <td className="table-light border-white hand" onClick={() => this.handleClickCountry(element["name"])}>{element["name"]}</td>
                   <td class="table-warning border-white" style={{textAlign: 'right'}}>{element["NewConfirmed"].toString().replace(/(.)(?=(\d{3})+$)/g,'$1 ')}</td>
                   <td class="table-warning border-white" style={{textAlign: 'right'}}>{element["TotalConfirmed"].toString().replace(/(.)(?=(\d{3})+$)/g,'$1 ')}</td>
                   <td class="table-primary border-white" style={{textAlign: 'right'}}>{element["NewRecovered"].toString().replace(/(.)(?=(\d{3})+$)/g,'$1 ')}</td>

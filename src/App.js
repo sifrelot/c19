@@ -6,28 +6,39 @@ import NavBar from './navBar';
 import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
 import NotFound from './notFound';
 import Home from './home';
-import Country from './country';
 import ScrollToTop from 'react-scroll-up';
+import ArticlesPage from './articlesPage';
+import { AUTH, googleAuth } from './firebase';
 
 class App extends Component {
   state = {
-    connected: false,
+    user: AUTH.currentUser,
   }
 
   // fix this
   handleLog = () => {
-    const {connected} = this.state
-    if (connected===true)
-      this.setState({connected: false})
-    else
-      this.setState({connected: true})
+    const {user} = this.state
+    if (user){
+      AUTH.signOut().then(() => {
+        this.setState({user: AUTH.currentUser})
+      }).catch((error) => {
+        console.log(error.message)
+      });}
+    else {
+      AUTH.signInWithPopup(googleAuth).then((res) => {
+        console.log(res.user)
+        this.setState({user: AUTH.currentUser})
+      }).catch((error) => {
+        console.log(error.message)
+      })
+    }
   }
 
   render() {
-    const {connected} = this.state
+    const {connected, user} = this.state
     return (
       <div>
-        <NavBar connected={connected} onClickLog={this.handleLog}/>
+        <NavBar connected={connected} user={user} onClickLog={this.handleLog}/>
         <header className="App-header">
         </header>
         <div>
@@ -37,7 +48,7 @@ class App extends Component {
                 <Home/>
               </Route>
               <Route path="/articles">
-                <Country/>
+                <ArticlesPage/>
               </Route>
               <Route path="*">
                 <NotFound/>
@@ -47,13 +58,13 @@ class App extends Component {
         </div>
         <footer>
           <Alert className="alert alert-primary" role="alert" >
-            <div class="d-grid gap-2 d-md-flex justify-content-md">
+            <div class="row force-to-bottom text-center">
               <span class="me-auto">Data Source: <a href="https://covid19api.com/" target="_blank">COVID-19 API / Johns Hopkins CSEE</a></span>
             </div>
           </Alert>
         </footer>
         <ScrollToTop showUnder={160}>
-          <button class="btn btn-primary me-md-2" type="button" onClick={()=>{window.scroll(0,0)}}>Head</button>
+          <div class="btn btn-primary me-md-2" type="button" onClick={()=>{window.scroll(0,0)}}>Head</div>
         </ScrollToTop>
       </div>
     )

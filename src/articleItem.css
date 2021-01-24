@@ -1,0 +1,26 @@
+.main {
+    width: 18rem;
+    margin-top: 2vmin;
+    margin-bottom: 1vmin;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.date {
+    color:darkgray;
+    font-size: small;
+}
+
+.author {
+    color:gray;
+}
+
+.country {
+    color:black;
+    font-size: small;
+    font-style: italic;
+}
+
+.article-content {
+    text-align: justify;
+}

@@ -7,7 +7,8 @@ import CaseTotal from './caseTotal'
 import CaseCountry from './caseCountry'
 import './home.css'
 import ReturnBanner from './returnBanner'
-import {HISTORICAL, SUMMARY} from './firebase'
+import {HISTORICAL, SUMMARY, STORAGE} from './firebase'
+import SideArticles from './sideArticles'
 
 function getPreviousDay() {
   const date = new Date()
@@ -51,8 +52,11 @@ function compareHistoricalTime(a,b) {
   return 1
 }
 
+const ref = STORAGE.ref('bigcorona.png');
+
 class Home extends Component {
   state = {
+    ur:'',
     country: "Worldwide",
     summary: {
       Worldwide: {
@@ -78,8 +82,9 @@ class Home extends Component {
     let firestore_date = await SUMMARY.doc("Date").get() // get data from firebase
     if (firestore_date.exists) {
       firestore_date = new Date(firestore_date.data()["Date"])
+      let now = new Date()
 
-      if (true) { // condition sur la date
+      if ((now.getTime()-firestore_date.getTime())/(3600*1000*24)<1) { // data is not older that 24 hours (changed because of unavailable api)
         let firestore_data = await SUMMARY.doc("summary").get()  // get data from firebase
         if (firestore_data.exists) { // if data exist: use this data. Otherwise ask the covid19 api
           console.log("summary from firestore")
@@ -106,8 +111,8 @@ class Home extends Component {
             TotalDeaths:global["TotalDeaths"],
             TotalRecovered:global["TotalRecovered"],
             ActiveConfirmed:global["TotalConfirmed"] - global["TotalDeaths"] - global["TotalRecovered"],
-            RecoveryRate:global["TotalConfirmed"] / global["TotalRecovered"],
-            MortalityRate:global["TotalConfirmed"] / global["TotalDeaths"],},
+            RecoveryRate:100 * global["TotalRecovered"] / global["TotalConfirmed"],
+            MortalityRate:100 * global["TotalDeaths"] / global["TotalConfirmed"],},
         }
         const countries = data["Countries"]
         if (countries !== undefined) {
@@ -121,8 +126,8 @@ class Home extends Component {
               TotalDeaths:countries[country]["TotalDeaths"],
               TotalRecovered:countries[country]["TotalRecovered"],
               ActiveConfirmed:countries[country]["TotalConfirmed"] - countries[country]["TotalDeaths"] - countries[country]["TotalRecovered"],
-              RecoveryRate:countries[country]["TotalConfirmed"] / countries[country]["TotalRecovered"],
-              MortalityRate:countries[country]["TotalConfirmed"] / countries[country]["TotalDeaths"],
+              RecoveryRate:100 * countries[country]["TotalRecovered"] / countries[country]["TotalConfirmed"],
+              MortalityRate:100 * countries[country]["TotalDeaths"] / countries[country]["TotalConfirmed"],
               CountryCode:countries[country]["CountryCode"],
             }
           }
@@ -182,9 +187,15 @@ class Home extends Component {
     }
   }
 
+  async getPictures() {
+    const url = await ref.getDownloadURL();
+    this.setState({url: url})
+  }
+
   componentDidMount(){
     this.getCovidSummary()
     this.getCovidHistorical()
+    this.getPictures()
   }
 
   scrollTop() {
@@ -192,6 +203,7 @@ class Home extends Component {
   }
 
   handleCountryChange = (country) => {
+    this.scrollTop()
     const {historical} = this.state
     this.setState({country: country})
     if (historical[country]===undefined)
@@ -199,7 +211,7 @@ class Home extends Component {
   }
   
   render() {
-    const {country, summary, historical} = this.state
+    const {country, summary, historical, url} = this.state
     let date
     let historical_data = []
     if (historical[country]!==undefined) {
@@ -214,15 +226,30 @@ class Home extends Component {
     
     return (
       <Container>
-          {country!=="Worldwide" && <ReturnBanner country={country} onClick={this.handleCountryChange}/>}
-          <CaseSummary country={country} data={summary[country]}/>
-          <CaseDistribution country={country} data={summary[country]}/>
-          <CaseDaily country={country} data={daily_data}/>
-          <CaseTotal country={country} data={historical_data}/>
-          <CaseCountry handleCountryClick={this.handleCountryChange} country={country} data={summary}/>
+        <span className="d-flex justify-content-center title" >
+          <img src={url} class="img-fluid" style={{width:'6%'}}/>
+          <span class="d-flex align-items-center" style={{margin:"10px"}}>COVID-19</span>
+        </span>
+        <br/>
+        <p class="subtitle" style={{textAlign:'center'}}>
+          Live Updates and Statistics
+        </p>
+        {country!=="Worldwide" && <ReturnBanner country={country} onClick={this.handleCountryChange}/>}
+        <div class="d-flex">
+          <div class="col-9">
+            <CaseSummary country={country} data={summary[country]}/>
+            <CaseDistribution country={country} data={summary[country]}/>
+            <CaseDaily country={country} data={daily_data}/>
+            <CaseTotal country={country} data={historical_data}/>
+            <CaseCountry handleCountryClick={this.handleCountryChange} country={country} data={summary}/>
+          </div>
+          <div class="col-3">
+            <SideArticles country={country}/>
+          </div>
+        </div>
       </Container>
     )
   }
 }
-  
+
 export default Home;
