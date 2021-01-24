@@ -39,6 +39,6 @@ ui.start('#firebaseui-auth-container', {
 });*/
 
 export const AUTH = firebase.auth()
-
+AUTH.setPersistence(firebase.auth.Auth.Persistence.SESSION)
 export const googleAuth = new firebase.auth.GoogleAuthProvider()
 googleAuth.setCustomParameters({ prompt: 'select_account' });

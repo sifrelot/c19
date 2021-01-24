@@ -1,7 +1,9 @@
 import React, {PureComponent} from 'react'
 import { Container } from 'react-bootstrap'
+import AddArticle from './addArticle'
 import ArticleItem from './articleItem'
 import { ARTICLES, AUTH } from './firebase'
+import './articlePage.css'
 
 const article = {
   title: "Tite de l'article",
@@ -28,6 +30,9 @@ if (user != null) {
 class ArticlesPage extends PureComponent {
   state = {
     country: this.props.country,
+    user: this.props.user,
+    addArticles: false,
+    addingArticle: true,
     articles: [],
   }
 
@@ -44,6 +49,14 @@ class ArticlesPage extends PureComponent {
         this.setState({artciles: articles})
     }
   }
+  
+  async getAddAuth() {
+    // requete pour savoir si l'utilisateur peut ajouter des articles
+  }
+
+  handleAddArticleClick() {
+
+  }
 
   componentWillReceiveProps(nextProps) {
     this.setState({country:nextProps.country})
@@ -51,13 +64,16 @@ class ArticlesPage extends PureComponent {
 
   componentDidMount() {
     this.getArticles()
+    this.getAddAuth()
   }
   
   render() {
+    const {addArticles, addingArticle} = this.state
     return (
         <Container class="container-fluid">
-            <span class="d-flex justify-content-center title" style={{margin:"10px"}}>Articles about COVID-19</span>
-            <span class="btn btn-primary me-md-2">New Article...</span>
+            <span class="d-flex justify-content-center title title">Articles about COVID-19</span>
+            {(addArticles && !addingArticle) && <span class="btn btn-primary me-md-2" onClick={this.handleAddArticleClick}>New Article...</span>}
+            {addingArticle && <AddArticle/>}
             <div class="d-flex align-content-start flex-wrap">
                 <ArticleItem article={article}/>
                 <ArticleItem article={article}/>
