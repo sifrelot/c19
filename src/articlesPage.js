@@ -14,13 +14,8 @@ const article = {
 }
 
 var user = AUTH.currentUser;
-var name, email, photoUrl, uid, emailVerified;
-
+var uid;
 if (user != null) {
-  name = user.displayName;
-  email = user.email;
-  photoUrl = user.photoURL;
-  emailVerified = user.emailVerified;
   uid = user.uid;  // The user's ID, unique to the Firebase project. Do NOT use
                    // this value to authenticate with your backend server, if
                    // you have one. Use User.getToken() instead.
@@ -31,8 +26,8 @@ class ArticlesPage extends PureComponent {
   state = {
     country: this.props.country,
     user: this.props.user,
-    addArticles: false,
-    addingArticle: true,
+    addArticles: true,
+    addingArticle: false,
     articles: [],
   }
 
@@ -54,8 +49,13 @@ class ArticlesPage extends PureComponent {
     // requete pour savoir si l'utilisateur peut ajouter des articles
   }
 
-  handleAddArticleClick() {
+  handleAddArticleButton = () => {
+    this.setState({addingArticle: true})
+  }
 
+  handleSubmit = ({title, country, content}) => {
+    console.log(title, country, content)
+    this.setState({addingArticle: false})
   }
 
   componentWillReceiveProps(nextProps) {
@@ -69,17 +69,20 @@ class ArticlesPage extends PureComponent {
   
   render() {
     const {addArticles, addingArticle} = this.state
+    const user = {
+      displayName: "Luigi Sda" //.slice(0,5)
+    }
     return (
-        <Container class="container-fluid">
-            <span class="d-flex justify-content-center title title">Articles about COVID-19</span>
-            {(addArticles && !addingArticle) && <span class="btn btn-primary me-md-2" onClick={this.handleAddArticleClick}>New Article...</span>}
-            {addingArticle && <AddArticle/>}
-            <div class="d-flex align-content-start flex-wrap">
-                <ArticleItem article={article}/>
-                <ArticleItem article={article}/>
-                <ArticleItem article={article}/>
-                <ArticleItem article={article}/>
-                <ArticleItem article={article}/>
+        <Container className="container-fluid">
+            <span className="d-flex justify-content-center title">Articles about COVID-19</span>
+            {(addArticles && !addingArticle) && <span className="btn btn-primary me-md-2" onClick={this.handleAddArticleButton}>New Article...</span>}
+            {addingArticle && <AddArticle submit={this.handleSubmit}/>}
+            <div className="d-flex align-content-start flex-wrap">
+                <ArticleItem article={article} limit={[999, 1200]}/>
+                <ArticleItem article={article} limit={[999, 1200]}/>
+                <ArticleItem article={article} limit={[999, 1200]}/>
+                <ArticleItem article={article} limit={[999, 1200]}/>
+                <ArticleItem article={article} limit={[999, 1200]}/>
             </div>
         </Container>
     )

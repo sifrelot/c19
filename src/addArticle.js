@@ -1,5 +1,6 @@
-import { element } from 'prop-types'
 import React, { PureComponent } from 'react'
+import './addArticle.css'
+
 const COUTRY_LIST = [
   "Aruba", "Qatar", "Slovakia", "Venezuela (Bolivarian Republic)", "Italy", "Peru", "Spain", "South Africa", "Andorra", "Bosnia and Herzegovina",
   "Oman", "Papua New Guinea", "Bermuda", "Cambodia", "Congo (Kinshasa)", "Palestinian Territory", "Antarctica", "Hungary", "Latvia", "Maldives",
@@ -27,22 +28,63 @@ const COUTRY_LIST = [
 ]
 
 export default class AddArticle extends PureComponent {
+  state={
+    title:"",
+    content:"",
+    country: "Worldwide",
+    submit: this.props.submit,
+  }
+
+  handleTitleChange = ({target: {value}}) => {
+    this.setState({title: value})
+  }
+
+  handleContentChange = ({target: {value}}) => {
+    this.setState({content: value})
+  }
+
+  handleCountrySelect = ({target: {value}}) => {
+    this.setState({country: value})
+  }
+
+  handleArticleSubmit = () => {
+    const {submit, title, country, content} = this.state
+    if (title && content)
+      submit({title, country, content})
+  }
+
   render() {
+    const {title, content, country} = this.state
     return (
-      <div class="container-fluid">
-          <div class="form-floating">
-            <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style={{height: "100px"}}/>
-            <label for="floatingTextarea2">content</label>
+      <div className="container-fluid">
+        <div className="mainSection">
+          <div className="row">
+            <h5 className="add-title">Add an Article</h5>
           </div>
-          <div class="form-floating">
-            <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
-              <option selected>Worldwide</option>
-              {COUTRY_LIST.sort().map((element) =>(
-                <option value={element}>{element}</option>
-              ))}
-            </select>
-            <label for="floatingSelect">Select a country</label>
+          <div className="row marginDef">
+            <div className="col-3">
+              <input type="text" className="form-control marginDef" placeholder="Title" value={title} onChange={this.handleTitleChange} required/>
+              <div className="form-floating">
+                <select className="form-select marginDef" id="countrySelect" aria-label="Floating label select" onChange={this.handleCountrySelect} defaultValue={country} required>
+                  <option value="Worldwide" key={999}>Worldwide</option>
+                  {COUTRY_LIST.sort().map((element, index) =>(
+                    <option value={element} key={index}>{element}</option>
+                  ))}
+                </select>
+                <label htmlFor="countrySelect">Select a country</label>
+              </div>
+            </div>
+            <div className="col-8">
+              <div className="row">
+                <div className="form-floating">
+                  <textarea className="form-control marginDef" placeholder="Content" id="contentArea" value={content} onChange={this.handleContentChange} style={{height: "auto"}} required/>
+                  <label htmlFor="contentArea" style={{marginLeft: "10px"}}>content</label>
+                </div>
+              </div>
+            </div>
+            <div className="col-1"><div className="btn btn-primary me-md-2 marginDef" type="submit" onClick={this.handleArticleSubmit}>submit</div></div>
           </div>
+        </div>
       </div>
     )
   }

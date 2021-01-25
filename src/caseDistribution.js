@@ -45,11 +45,11 @@ export default class CaseDistribution extends PureComponent {
                     {`Corona Virus Cases Distribution ${countryPrint}`}
                 </div>
                 {(data===undefined || data[0]["value"]==="") ? 
-                    <div class="d-flex align-items-center">
+                    <div className="d-flex align-items-center">
                         <strong>Loading...</strong>
-                        <div class="spinner-border ms-auto" role="status" aria-hidden="true"/>
+                        <div className="spinner-border ms-auto" role="status" aria-hidden="true"/>
                     </div> :
-                    <div class="d-flex justify-content-center">
+                    <div className="d-flex justify-content-center">
                         <PieChart width={520} height={520}>
                             <Pie
                                 data={data}

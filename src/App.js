@@ -56,15 +56,8 @@ class App extends Component {
             </Switch>
           </BrowserRouter>
         </div>
-        <footer>
-          <Alert className="alert alert-primary" role="alert" >
-            <div class="row force-to-bottom text-center">
-              <span class="me-auto">Data Source: <a href="https://covid19api.com/" target="_blank">COVID-19 API / Johns Hopkins CSEE</a></span>
-            </div>
-          </Alert>
-        </footer>
         <ScrollToTop showUnder={160}>
-          <div class="btn btn-primary me-md-2" type="button" onClick={()=>{window.scroll(0,0)}}>Head</div>
+          <div className="btn btn-primary me-md-2" type="button" onClick={()=>{window.scroll(0,0)}}>Head</div>
         </ScrollToTop>
       </div>
     )

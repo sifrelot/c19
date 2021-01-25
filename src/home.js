@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Container } from 'react-bootstrap'
+import { Container, Alert } from 'react-bootstrap'
 import CaseDaily from './caseDaily'
 import CaseDistribution from './caseDistribution'
 import CaseSummary from './caseSummary'
@@ -227,26 +227,33 @@ class Home extends Component {
     return (
       <Container>
         <span className="d-flex justify-content-center title" >
-          <img src={url} class="img-fluid" style={{width:'6%'}}/>
-          <span class="d-flex align-items-center" style={{margin:"10px"}}>COVID-19</span>
+          <img src={url} className="img-fluid" style={{width:'6%'}}/>
+          <span className="d-flex align-items-center" style={{margin:"10px"}}>COVID-19</span>
         </span>
         <br/>
-        <p class="subtitle" style={{textAlign:'center'}}>
+        <p className="subtitle" style={{textAlign:'center'}}>
           Live Updates and Statistics
         </p>
         {country!=="Worldwide" && <ReturnBanner country={country} onClick={this.handleCountryChange}/>}
-        <div class="d-flex">
-          <div class="col-9">
+        <div className="d-flex">
+          <div className="col-9">
             <CaseSummary country={country} data={summary[country]}/>
             <CaseDistribution country={country} data={summary[country]}/>
             <CaseDaily country={country} data={daily_data}/>
             <CaseTotal country={country} data={historical_data}/>
             <CaseCountry handleCountryClick={this.handleCountryChange} country={country} data={summary}/>
           </div>
-          <div class="col-3">
+          <div className="col-3">
             <SideArticles country={country}/>
           </div>
         </div>
+        <footer>
+          <Alert className="alert alert-primary" role="alert" >
+            <div className="row force-to-bottom text-center">
+              <span className="me-auto">Data Source: <a href="https://covid19api.com/" target="_blank">COVID-19 API / Johns Hopkins CSEE</a></span>
+            </div>
+          </Alert>
+        </footer>
       </Container>
     )
   }

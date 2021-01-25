@@ -20,11 +20,11 @@ export default class CaseTotal extends PureComponent {
           {`Total Corona Virus Cases ${countryPrint}`}
         </div>
         {(data===undefined || data[0]===undefined) ?
-          <div class="d-flex align-items-center">
+          <div className="d-flex align-items-center">
             <strong>Loading...</strong>
-            <div class="spinner-border ms-auto" role="status" aria-hidden="true"/>
+            <div className="spinner-border ms-auto" role="status" aria-hidden="true"/>
           </div> :
-          <div class="d-flex justify-content-center">
+          <div className="d-flex justify-content-center">
             <AreaChart
               width={800}
               height={500}

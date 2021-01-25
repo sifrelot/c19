@@ -1,0 +1,19 @@
+.mainSection {
+    border: solid;
+    border-color: lightgrey;
+    border-width: 1px;
+    border-radius: 5px;
+}
+
+.marginDef {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.add-title {
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

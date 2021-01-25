@@ -4,23 +4,23 @@ import './navBar.css'
 
 const NavBar = ({onClickLog, user}) => {
     return (
-        <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
-                <div class="collapse navbar-collapse">
-                    <div class="navbar-brand">COVID-19</div>
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/">Home</a>
+        <nav className="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+            <div className="container-fluid">
+                <div className="collapse navbar-collapse">
+                    <div className="navbar-brand">COVID-19</div>
+                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li className="nav-item">
+                            <a className="nav-link active" aria-current="page" href="/">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/articles">Articles</a>
+                        <li className="nav-item">
+                            <a className="nav-link" href="/articles">Articles</a>
                         </li>
                     </ul>
-                    {user ? <div class="d-flex flex-row justify-content-center" style={{alignItems:'center'}}>
-                        <div class="name">Connected as {user.displayName}</div>
-                        <div><div class="btn btn-outline-success" type="submit" onClick={onClickLog}>Log Out</div></div>
+                    {user ? <div className="d-flex flex-row justify-content-center" style={{alignItems:'center'}}>
+                        <div className="name">Connected as {user.displayName}</div>
+                        <div><div className="btn btn-outline-success" type="submit" onClick={onClickLog}>Log Out</div></div>
                         </div> : <div>
-                        <div class="btn btn-outline-success" type="submit" onClick={onClickLog}>Login with Google</div>
+                        <div className="btn btn-outline-success" type="submit" onClick={onClickLog}>Login with Google</div>
                     </div> }
                     
                 </div>
@@ -30,7 +30,6 @@ const NavBar = ({onClickLog, user}) => {
 }
 
 NavBar.propTypes = {
-    connected: PropTypes.bool.isRequired,
     onClickLog: PropTypes.func.isRequired,
 }
 

@@ -4,10 +4,10 @@ import ArticleItem from './articleItem'
 import { ARTICLES } from './firebase'
 
 const article = {
-  title: "Tite de l'article",
+  title: "Ceci est un titre beaucoup trop long",
   author: "moa",
   date: "aujourd'hui",
-  content: "bonjour les amis ceci est juste un test pour voir si tout fonctionne correctement",
+  content: "bonjour les amis ceci est juste un test pour voir si tout fonctionne correctement. bonjour les amis ceci est juste un test pour voir si tout fonctionne correctement",
   country: "France",
 }
 
@@ -41,18 +41,18 @@ class SideArticles extends PureComponent {
   
   render() {
     return (
-      <Container class="container-fluid">
-        <div class="d-flex flex-column">
-          <div class="d-flex justify-content-center">
+      <Container className="container-fluid">
+        <div className="d-flex flex-column">
+          <div className="d-flex justify-content-center">
             <h3>Related Articles</h3>
           </div>
-          <ArticleItem article={article}/>
-          <ArticleItem article={article}/>
-          <ArticleItem article={article}/>
-          <ArticleItem article={article}/>
-          <ArticleItem article={article}/>
-          <div class="d-flex justify-content-end">
-            <a class="nav-link" href="/articles">more articles</a>
+          <ArticleItem article={article} limit={[25, 140]}/>
+          <ArticleItem article={article} limit={[25, 140]}/>
+          <ArticleItem article={article} limit={[25, 140]}/>
+          <ArticleItem article={article} limit={[25, 140]}/>
+          <ArticleItem article={article} limit={[25, 140]}/>
+          <div className="d-flex justify-content-end">
+            <a className="nav-link" href="/articles">more articles</a>
           </div>
         </div>
       </Container>
