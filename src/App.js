@@ -1,33 +1,41 @@
 import React, { Component } from 'react'
 import './App.css';
-import {Alert} from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import NavBar from './navBar';
-import { BrowserRouter, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import NotFound from './notFound';
 import Home from './home';
 import ScrollToTop from 'react-scroll-up';
 import ArticlesPage from './articlesPage';
-import { AUTH, googleAuth } from './firebase';
+import { AUTH, ADD_ARTICLES, googleAuth } from './firebase';
 
 class App extends Component {
   state = {
     user: AUTH.currentUser,
   }
 
+  async connectUser(user) {
+    const firestore_data = await ADD_ARTICLES.where("uid", "==", user.uid).get() // get info from firebase
+    if (!firestore_data.empty)
+      localStorage.setItem('addArticles', "true")
+
+    localStorage.setItem('user', `${user.displayName}`)
+    window.location.reload(false);
+  }
+
   // fix this
   handleLog = () => {
-    const {user} = this.state
-    if (user){
+    if (localStorage.getItem('user')) {
       AUTH.signOut().then(() => {
-        this.setState({user: AUTH.currentUser})
+        localStorage.removeItem('user')
+        localStorage.removeItem('addArticles')
+        window.location.reload(false);
       }).catch((error) => {
         console.log(error.message)
-      });}
+      })}
     else {
       AUTH.signInWithPopup(googleAuth).then((res) => {
-        console.log(res.user)
-        this.setState({user: AUTH.currentUser})
+        this.connectUser(res.user)
       }).catch((error) => {
         console.log(error.message)
       })
@@ -35,10 +43,9 @@ class App extends Component {
   }
 
   render() {
-    const {connected, user} = this.state
     return (
       <div>
-        <NavBar connected={connected} user={user} onClickLog={this.handleLog}/>
+        <NavBar onClickLog={this.handleLog}/>
         <header className="App-header">
         </header>
         <div>

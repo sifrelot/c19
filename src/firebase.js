@@ -26,17 +26,8 @@ const db = firebase.firestore()
 export const SUMMARY = db.collection("summary")
 export const HISTORICAL = db.collection("historical")
 export const ARTICLES = db.collection("articles")
+export const ADD_ARTICLES = db.collection("addArticles")
 export const STORAGE = firebase.storage()
-
-/*var ui = new firebaseui.auth.AuthUI(firebase.auth());
-ui.start('#firebaseui-auth-container', {
-  signInOptions: [{
-    provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-    signInMethod: firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
-    //requireDisplayName: false
-  },
-],
-});*/
 
 export const AUTH = firebase.auth()
 AUTH.setPersistence(firebase.auth.Auth.Persistence.SESSION)

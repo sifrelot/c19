@@ -3,7 +3,7 @@ import { Container } from 'react-bootstrap'
 import AddArticle from './addArticle'
 import ArticleItem from './articleItem'
 import { ARTICLES, AUTH } from './firebase'
-import './articlePage.css'
+import './articlesPage.css'
 
 const article = {
   title: "Tite de l'article",
@@ -25,8 +25,7 @@ if (user != null) {
 class ArticlesPage extends PureComponent {
   state = {
     country: this.props.country,
-    user: this.props.user,
-    addArticles: true,
+    userName: localStorage.getItem('user'),
     addingArticle: false,
     articles: [],
   }
@@ -44,16 +43,15 @@ class ArticlesPage extends PureComponent {
         this.setState({artciles: articles})
     }
   }
-  
-  async getAddAuth() {
-    // requete pour savoir si l'utilisateur peut ajouter des articles
-  }
 
   handleAddArticleButton = () => {
     this.setState({addingArticle: true})
   }
 
   handleSubmit = ({title, country, content}) => {
+    const {userName} = this.state
+    let date = new Date()
+    date = date.toISOString()
     console.log(title, country, content)
     this.setState({addingArticle: false})
   }
@@ -64,14 +62,13 @@ class ArticlesPage extends PureComponent {
 
   componentDidMount() {
     this.getArticles()
-    this.getAddAuth()
   }
   
   render() {
-    const {addArticles, addingArticle} = this.state
-    const user = {
-      displayName: "Luigi Sda" //.slice(0,5)
-    }
+    const {addingArticle} = this.state
+    let addArticles = false
+    if (localStorage.getItem('addArticles'))
+      addArticles = true
     return (
         <Container className="container-fluid">
             <span className="d-flex justify-content-center title">Articles about COVID-19</span>

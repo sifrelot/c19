@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import PropTypes from 'prop-types'
 import './navBar.css'
 
-const NavBar = ({onClickLog, user}) => {
+const NavBar = ({onClickLog}) => {
     return (
         <nav className="navbar fixed-top navbar-expand-lg navbar-light bg-light">
             <div className="container-fluid">
@@ -16,8 +16,8 @@ const NavBar = ({onClickLog, user}) => {
                             <a className="nav-link" href="/articles">Articles</a>
                         </li>
                     </ul>
-                    {user ? <div className="d-flex flex-row justify-content-center" style={{alignItems:'center'}}>
-                        <div className="name">Connected as {user.displayName}</div>
+                    {localStorage.getItem('user') ? <div className="d-flex flex-row justify-content-center" style={{alignItems:'center'}}>
+                        <div className="name">Connected as {localStorage.getItem('user')}</div>
                         <div><div className="btn btn-outline-success" type="submit" onClick={onClickLog}>Log Out</div></div>
                         </div> : <div>
                         <div className="btn btn-outline-success" type="submit" onClick={onClickLog}>Login with Google</div>
