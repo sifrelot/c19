@@ -28,8 +28,10 @@ class SideArticles extends PureComponent {
     articles: [],
   }
 
-  async getArticles() {
+  async getArticles(props_country) {
     let {country} = this.state
+    if (props_country)
+      country = props_country
     if (country===undefined)
       country = "Worldwide"
     let articles
@@ -49,6 +51,7 @@ class SideArticles extends PureComponent {
 
   componentWillReceiveProps(nextProps) {
     this.setState({country:nextProps.country})
+    this.getArticles(nextProps.country)
   }
 
   componentDidMount() {
