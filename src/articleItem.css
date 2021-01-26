@@ -9,16 +9,21 @@
 .date {
     color:darkgray;
     font-size: small;
+    margin-left: 6px;
+    margin-bottom: 3px;
 }
 
 .author {
     color:gray;
+    font-size: small;
 }
 
 .country {
     color:black;
     font-size: small;
     font-style: italic;
+    margin-right: 6px;
+    margin-bottom: 3px;
 }
 
 .article-content {

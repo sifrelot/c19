@@ -2,23 +2,18 @@ import React, {PureComponent} from 'react'
 import { Container } from 'react-bootstrap'
 import AddArticle from './addArticle'
 import ArticleItem from './articleItem'
-import { ARTICLES, AUTH } from './firebase'
+import { ARTICLES } from './firebase'
 import './articlesPage.css'
 
-const article = {
-  title: "Tite de l'article",
-  author: "moa",
-  date: "aujourd'hui",
-  content: "bonjour les amis ceci est juste un test pour voir si tout fonctionne correctement",
-  country: "France",
-}
-
-var user = AUTH.currentUser;
-var uid;
-if (user != null) {
-  uid = user.uid;  // The user's ID, unique to the Firebase project. Do NOT use
-                   // this value to authenticate with your backend server, if
-                   // you have one. Use User.getToken() instead.
+function sortDate(a, b) {
+  const date_a = new Date(a["date"])
+  const date_b = new Date(b["date"])
+  if (date_a.getTime() < date_b.getTime()) {
+    return 1;
+  } else if (date_a.getTime() > date_b.getTime()) {
+    return -1;
+  }
+  return 0;
 }
 
 
@@ -31,17 +26,30 @@ class ArticlesPage extends PureComponent {
   }
 
   async getArticles() {
-    const {country} = this.state
+    let {country} = this.state
+    if (country===undefined)
+      country = "Worldwide"
     let articles
     if (country==="Worldwide")
       articles = await ARTICLES.get()
-    else
-      articles = await ARTICLES.doc("Date").get() // get data from the database
-    if (articles.exists) {
-      articles = articles.data()
-      if (articles!==undefined)
-        this.setState({artciles: articles})
+    else if (country!==undefined)
+      articles = await ARTICLES.where("country","==", country).get() // get data from the database
+    if (!articles.empty) {
+      let list_articles = []
+      articles = articles.docs
+      for (let test in articles)
+        list_articles = [articles[test].data(), ...list_articles]
+      this.setState({articles: list_articles})
     }
+  }
+
+  async addArticle({title, country, content}) {
+    const {userName, articles} = this.state
+    let date = new Date()
+    date = date.toISOString()
+    const article = {title: title, country: country, date: date, content: content, author: userName}
+    await ARTICLES.add(article) // the new article to the firestore database
+    this.setState({addingArticle: false, articles: [article, ...articles]})
   }
 
   handleAddArticleButton = () => {
@@ -49,11 +57,7 @@ class ArticlesPage extends PureComponent {
   }
 
   handleSubmit = ({title, country, content}) => {
-    const {userName} = this.state
-    let date = new Date()
-    date = date.toISOString()
-    console.log(title, country, content)
-    this.setState({addingArticle: false})
+    this.addArticle({title, country, content})
   }
 
   componentWillReceiveProps(nextProps) {
@@ -65,23 +69,21 @@ class ArticlesPage extends PureComponent {
   }
   
   render() {
-    const {addingArticle} = this.state
+    const {addingArticle, articles} = this.state
     let addArticles = false
     if (localStorage.getItem('addArticles'))
       addArticles = true
     return (
-        <Container className="container-fluid">
-            <span className="d-flex justify-content-center title">Articles about COVID-19</span>
-            {(addArticles && !addingArticle) && <span className="btn btn-primary me-md-2" onClick={this.handleAddArticleButton}>New Article...</span>}
-            {addingArticle && <AddArticle submit={this.handleSubmit}/>}
-            <div className="d-flex align-content-start flex-wrap">
-                <ArticleItem article={article} limit={[999, 1200]}/>
-                <ArticleItem article={article} limit={[999, 1200]}/>
-                <ArticleItem article={article} limit={[999, 1200]}/>
-                <ArticleItem article={article} limit={[999, 1200]}/>
-                <ArticleItem article={article} limit={[999, 1200]}/>
-            </div>
-        </Container>
+      <Container className="container-fluid">
+        <span className="d-flex justify-content-center title">Articles about COVID-19</span>
+        {(addArticles && !addingArticle) && <span className="btn btn-primary me-md-2" onClick={this.handleAddArticleButton}>New Article...</span>}
+        {addingArticle && <AddArticle submit={this.handleSubmit}/>}
+        <div className="d-flex align-content-start flex-wrap">
+          {articles.sort(sortDate).map((article) => (
+            <ArticleItem key={`${article.date}${article.author}`} article={article} limit={[999, 9999]}/>
+          ))}
+        </div>
+      </Container>
     )
   }
 }

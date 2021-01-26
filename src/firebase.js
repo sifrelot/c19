@@ -26,7 +26,7 @@ const db = firebase.firestore()
 export const SUMMARY = db.collection("summary")
 export const HISTORICAL = db.collection("historical")
 export const ARTICLES = db.collection("articles")
-export const ADD_ARTICLES = db.collection("addArticles")
+export const ADD_ARTICLES = db.collection("addArticles") // list of authorized users
 export const STORAGE = firebase.storage()
 
 export const AUTH = firebase.auth()
